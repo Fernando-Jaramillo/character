@@ -17,14 +17,16 @@
         v-bind:character="character"/>
       </div>
       <nav class="pagination" role="navegation" aria-label="pagination">
-        <a class="pagination-previous">Before</a>  
+
+        <a class="pagination-previous" v-on:click="changePage( page - 1 )">Before</a>  
+
         <ul class="pagination-list">
           <li>
             <a class="pagination-link is-current">{{ page }}</a>
           </li>
         </ul>
 
-        <a class="pagination-next">Next</a>      
+        <a class="pagination-next" v-on:click="changePage( page + 1 )">Next</a>      
 
       </nav>
     </div>  
@@ -53,8 +55,11 @@ export default {
   },
   methods: {
     takeData() {
+      let params = {
+        page : this.page
+      };
       let it = this;
-      axios.get("https://rickandmortyapi.com/api/character")
+      axios.get("https://rickandmortyapi.com/api/character/", {params})
         .then((res) => {
           console.log(res.data);
           it.characters = res.data.results;
@@ -63,6 +68,10 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    changePage(receivedPag) {
+      this.page = (receivedPag > 0 && receivedPag < this.pages )? receivedPag : this.page;
+      this.takeData();
     }
   }
 }
