@@ -6,7 +6,14 @@
           <span class="has-text-success">R&M</span>
           <span class="subtitle">Characters</span>
         </h1>
-        <button class="button is-success is-rounded" v-on:click="takeData">Show my People</button>
+        <div class="field has-addons is-pulled-right">
+          <div class="control">
+            <input v-model="search" type="text" class="input is-rounded" v-on:keyup.enter="searchData">
+          </div>
+          <div class="control">
+            <button class="button is-success is-rounded" v-on:click="searchData">Search by Name</button>
+          </div>
+        </div>
       </div>
     </header>
     <div class="container">
@@ -47,7 +54,8 @@ export default {
     return {
       characters: [],
       page: 1,
-      pages: 1
+      pages: 1,
+      search: ''
     }
   },
   created(){
@@ -56,10 +64,11 @@ export default {
   methods: {
     takeData() {
       let params = {
-        page : this.page
+        page : this.page,
+        name : this.search
       };
       let it = this;
-      axios.get("https://rickandmortyapi.com/api/character/", {params})
+      axios.get("https://rickandmortyapi.com/api/character/", { params })
         .then((res) => {
           console.log(res.data);
           it.characters = res.data.results;
@@ -72,6 +81,10 @@ export default {
     changePage(receivedPag) {
       this.page = (receivedPag > 0 && receivedPag < this.pages )? receivedPag : this.page;
       this.takeData();
+    },
+    searchData() {
+      this.page = 1;
+      this.takeData()
     }
   }
 }
