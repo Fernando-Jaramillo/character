@@ -19,6 +19,7 @@
     <div class="container">
       <div class="columns is-desktop is-mobile is-tablet is-multiline is-centered">
         <Character 
+        @showModal="showModal"
         v-for="character in characters" 
         v-bind:key="character.id" 
         v-bind:character="character"/>
@@ -37,6 +38,30 @@
 
       </nav>
     </div>  
+    <div class="modal"
+      :class="{ 'is-active': modal }"
+      v-if="modal">
+      <div class="modal-background" @click="modal=false"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">{{ details.species }}</p>
+        </header>
+        <div class="modal-card-body">
+          <strong>Gender:</strong>
+          <p>{{ details.gender }}</p>        
+          <strong>Status:</strong>
+          <p>{{ details.status }}</p>
+          <strong>Specie:</strong>
+          <p>{{ details.species }}</p>
+          <strong>type:</strong>
+          <p>{{ details.type }}</p>
+        </div>
+        <footer class="modal-card-foot">
+          <button class="button" @click="modal=false">Close</button>
+        </footer>
+
+      </div>
+    </div>
   </div>
 </template>
 
@@ -55,7 +80,9 @@ export default {
       characters: [],
       page: 1,
       pages: 1,
-      search: ''
+      search: '',
+      modal: false,
+      details: {}
     }
   },
   created(){
@@ -70,7 +97,6 @@ export default {
       let it = this;
       axios.get("https://rickandmortyapi.com/api/character/", { params })
         .then((res) => {
-          console.log(res.data);
           it.characters = res.data.results;
           it.pages = res.data.info.pages
           })
@@ -85,6 +111,15 @@ export default {
     searchData() {
       this.page = 1;
       this.takeData()
+    },
+    showModal(id) {
+      this.modal = true;
+      this.getDetails(id);
+    },
+    async getDetails(id){
+       let respDet = await axios.get(`https://rickandmortyapi.com/api/character/${id}/`)
+       this.details = respDet.data;
+       console.log(this.details);
     }
   }
 }
